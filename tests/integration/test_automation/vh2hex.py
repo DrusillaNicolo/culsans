@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/software/cheshire/conda_env/bin/python3
 
 # Copyright 2022 ETH Zurich and University of Bologna.
 # Solderpad Hardware License, Version 0.51, see LICENSE for details.
@@ -13,16 +13,16 @@ import re
 ################################################################
 
 def usage():
-    print 'This script reads a memory file written in verilog format and translates it to hexfile.'
-    print 'The first word copied to the output is the one at the address specified with -b (0 by default).'
-    print 'Usage: '+sys.argv[0]+' [-m  <verilog_memfile>] [-o  <hexfile>] [-b <baseaddress>] [-i <instructions_baseaddress>] [-d <data_baseaddress>] [-w <4/8>[-h]'
-    print '-m: verilog memfile'
-    print '-o: output hexfile'
-    print '-b: first address copied to hexfile'
-    print '-i: first address copied to the instructions hexfile'
-    print '-d: first address copied to the data hexfile'
-    print '-w: word size (4 or 8 bytes)'
-    print '-h: this help'
+    print ('This script reads a memory file written in verilog format and translates it to hexfile.')
+    print ('The first word copied to the output is the one at the address specified with -b (0 by default).')
+    print ('Usage: '+sys.argv[0]+' [-m  <verilog_memfile>] [-o  <hexfile>] [-b <baseaddress>] [-i <instructions_baseaddress>] [-d <data_baseaddress>] [-w <4/8>[-h]')
+    print ('-m: verilog memfile')
+    print ('-o: output hexfile')
+    print ('-b: first address copied to hexfile')
+    print ('-i: first address copied to the instructions hexfile')
+    print ('-d: first address copied to the data hexfile')
+    print ('-w: word size (4 or 8 bytes)')
+    print ('-h: this help')
 
 ################################################################
 
@@ -136,7 +136,7 @@ def main():
         opts, args = getopt.getopt(sys.argv[1:], "m:o:b:i:d:w:h")
     except getopt.GetoptError as err:
         # print help information and exit:
-        print str(err)
+        print (str(err))
         usage()
         sys.exit(2)
     for o, a in opts:
