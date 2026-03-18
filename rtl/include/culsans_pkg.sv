@@ -19,15 +19,15 @@ package culsans_pkg;
   localparam int unsigned NumSources = 30;
   localparam int unsigned MaxPriority = 7;
 
-  localparam NrSlaves = 2; // actually masters, but slaves on the crossbar
+  localparam NrSlaves = 3; // actually masters, but slaves on the crossbar
 
   // 4 is recommended by AXI standard, so lets stick to it, do not change
   localparam IdWidth = 4;
   localparam IdWidthToXbar = IdWidth + $clog2(NB_CORES) + $clog2(NB_CORES+1);
   localparam IdWidthSlave = IdWidthToXbar + $clog2(NrSlaves);
 
-  // IP module
-  localparam logic[63:0] AddrTableLength = 64'h1000; //4 KByte of address table
+  // IAddress table
+  localparameLength logic[63:0] AddrTabl = 64'h1000; //4 KByte of address table
 
   typedef enum int unsigned {
     DRAM     = 0,
@@ -40,9 +40,10 @@ package culsans_pkg;
     CLINT    = 7,
     ROM      = 8,
     Debug    = 9
+    AddrTable = 10
   } axi_slaves_t;
 
-  localparam NB_PERIPHERALS = Debug + 1;
+  localparam NB_PERIPHERALS = AddrTable + 1;
 
 
   localparam logic[63:0] DebugLength    = 64'h1000;

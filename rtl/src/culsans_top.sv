@@ -91,7 +91,7 @@ module culsans_top #(
     .AXI_DATA_WIDTH ( AXI_DATA_WIDTH           ),
     .AXI_ID_WIDTH   ( culsans_pkg::IdWidthToXbar ),
     .AXI_USER_WIDTH ( AXI_USER_WIDTH           )
-  ) to_xbar[1:0]();
+  ) to_xbar[2:0]();
 
   AXI_BUS #(
     .AXI_ADDR_WIDTH ( AXI_ADDRESS_WIDTH        ),
@@ -707,7 +707,8 @@ module culsans_top #(
     '{ idx: culsans_pkg::SPI,      start_addr: culsans_pkg::SPIBase,      end_addr: culsans_pkg::SPIBase + culsans_pkg::SPILength           },
     '{ idx: culsans_pkg::Ethernet, start_addr: culsans_pkg::EthernetBase, end_addr: culsans_pkg::EthernetBase + culsans_pkg::EthernetLength },
     '{ idx: culsans_pkg::GPIO,     start_addr: culsans_pkg::GPIOBase,     end_addr: culsans_pkg::GPIOBase + culsans_pkg::GPIOLength         },
-    '{ idx: culsans_pkg::DRAM,     start_addr: culsans_pkg::DRAMBase,     end_addr: culsans_pkg::DRAMBase + culsans_pkg::DRAMLength         }
+    '{ idx: culsans_pkg::DRAM,     start_addr: culsans_pkg::DRAMBase,     end_addr: culsans_pkg::DRAMBase + culsans_pkg::DRAMLength         },
+    '{ idx: culsans_pkg::AddrTable, start_addr: culsans_pkg::AddrTableBase, end_addr: culsans_pkg::AddrTableBase + culsans_pkg::AddrTableLength }
   };
 
   localparam axi_pkg::xbar_cfg_t AXI_XBAR_CFG = '{
