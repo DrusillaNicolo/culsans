@@ -39,6 +39,6 @@ gen-regs:
 	$(REGGEN) -r --outdir rtl/src \
 	          rtl/data/addr_table.hjson
 	$(REGGEN) --cdefines \
-	          --outfile tests/sw/include/addr_table_regs.h \
+	          --outfile tests/integration/sw/include/addr_table_regs.h \
 	          rtl/data/addr_table.hjson
 
