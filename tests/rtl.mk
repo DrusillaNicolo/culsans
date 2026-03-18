@@ -182,7 +182,7 @@ $(library)/.build-llc-srcs: $(library) $(LLC_PKG) $(LLC_SRC)
 	@touch $(library)/.build-llc-srcs
 
 $(library)/.build-culsans-srcs: $(library) $(library)/.build-llc-srcs $(CULSANS_PKG) $(CULSANS_SRC)
-	$(VLOG) $(VLOG_FLAGS) -work $(library) $(CULSANS_PKG) $(list_incdir)
+	$(VLOG) $(VLOG_FLAGS) -sv -work $(library) $(CULSANS_PKG) $(list_incdir)
 	$(VLOG) $(VLOG_FLAGS) -timescale "1ns / 1ns" -work $(library) -pedanticerrors $(CULSANS_SRC) $(list_incdir)
 	@touch $(library)/.build-culsans-srcs
 
