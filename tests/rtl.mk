@@ -60,6 +60,7 @@ $(library) : $(CVA6_DIR)/corev_apu/rv_plic/rtl/plic_regmap.sv
 
 CULSANS_DIR := ../../rtl
 CULSANS_PKG := $(wildcard $(CULSANS_DIR)/include/*_pkg.sv)
+CULSANS_PKG += ../../rtl/src/addr_table_reg_pkg.sv
 
 CULSANS_SRC += $(CVA6_DIR)/vendor/planv/ace/src/ace_intf.sv
 CULSANS_SRC += $(CVA6_DIR)/vendor/planv/ace/src/snoop_intf.sv
