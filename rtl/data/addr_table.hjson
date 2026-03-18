@@ -4,7 +4,6 @@
 
 { name: "addr_table",
   clock_primary: "clk_i",
-   base_addr: "0x50000000",
   reset_primary: "rst_ni",
   
   bus_interfaces: [
