@@ -26,6 +26,9 @@ package culsans_pkg;
   localparam IdWidthToXbar = IdWidth + $clog2(NB_CORES) + $clog2(NB_CORES+1);
   localparam IdWidthSlave = IdWidthToXbar + $clog2(NrSlaves);
 
+  // IP module
+  localparam logic[63:0] AddrTableLength = 64'h1000; //4 KByte of address table
+
   typedef enum int unsigned {
     DRAM     = 0,
     GPIO     = 1,
@@ -69,6 +72,7 @@ package culsans_pkg;
     SPIBase      = 64'h2000_0000,
     EthernetBase = 64'h3000_0000,
     GPIOBase     = 64'h4000_0000,
+    AddrTableBase = 64'h5000_0000,
     DRAMBase     = 64'h8000_0000
   } soc_bus_start_t;
 
