@@ -27,7 +27,7 @@ package culsans_pkg;
   localparam IdWidthSlave = IdWidthToXbar + $clog2(NrSlaves);
 
   // IAddress table
-  localparameLength logic[63:0] AddrTabl = 64'h1000; //4 KByte of address table
+   localparam logic[63:0] AddrTableLength = 64'h1000; //4 KByte of address table//4 KByte of address table
 
   typedef enum int unsigned {
     DRAM     = 0,

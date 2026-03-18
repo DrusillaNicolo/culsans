@@ -9,4 +9,7 @@ module ip_module (
     // master for CCU to send invalidations
     output ariane_axi::req_t       ace_req_o,
     input  ariane_axi::resp_t      ace_resp_i
+
 );
+
+//QUA BISOGNSA METTERE LA LOGICA E LA FSM
