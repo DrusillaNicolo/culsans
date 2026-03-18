@@ -39,7 +39,7 @@ package culsans_pkg;
     PLIC     = 6,
     CLINT    = 7,
     ROM      = 8,
-    Debug    = 9
+    Debug    = 9,
     AddrTable = 10
   } axi_slaves_t;
 
