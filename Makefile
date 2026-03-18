@@ -35,7 +35,7 @@ REGGEN      = $(PYTHON) $(REGGEN_PATH)
 NUM_ENTRIES ?= 4
 
 gen-regs:
-	sed -i 's/"count": "[0-9]*"/"count": "$(NUM_ENTRIES)"/g' rtl/data/addr_table.hjson
+	sed -i 's/count: "[0-9]*"/count: "$(NUM_ENTRIES)"/g' rtl/data/addr_table.hjson
 	$(REGGEN) -r --outdir rtl/src \
 	          rtl/data/addr_table.hjson
 	$(REGGEN) --cdefines \
