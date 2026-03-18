@@ -68,7 +68,9 @@ CULSANS_SRC += $(CVA6_DIR)/vendor/planv/ace/src/ccu_fsm.sv
 CULSANS_SRC += $(CVA6_DIR)/vendor/planv/ace/src/ace_trs_dec.sv
 CULSANS_SRC += $(CVA6_DIR)/vendor/planv/ace/src/ace_ccu_top.sv
 CULSANS_SRC += $(CVA6_DIR)/corev_apu/tb/common/mock_uart.sv
-CULSANS_SRC += $(filter-out $(CULSANS_DIR)/src/culsans_xilinx.sv, $(wildcard $(CULSANS_DIR)/src/*.sv))
+CULSANS_SRC += $(filter-out $(CULSANS_DIR)/src/culsans_xilinx.sv, \
+               $(filter-out $(CULSANS_DIR)/src/addr_table_reg_pkg.sv, \
+               $(wildcard $(CULSANS_DIR)/src/*.sv)))
 CULSANS_INCDIR := $(CULSANS_DIR)/include
 CULSANS_INCDIR := $(foreach dir, ${CULSANS_INCDIR}, +incdir+$(dir))
 list_incdir += $(CULSANS_INCDIR)
