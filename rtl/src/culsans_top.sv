@@ -1074,4 +1074,29 @@ module culsans_top #(
     .CSYSACK('0)
   );
 `endif
+
+// ---------------
+  // AddrTable IP
+  // ---------------
+  culsans_pkg::req_slv_t  addr_table_req;
+  culsans_pkg::resp_slv_t addr_table_resp;
+
+  `AXI_ASSIGN_TO_REQ(addr_table_req, master[culsans_pkg::AddrTable])
+  `AXI_ASSIGN_FROM_RESP(master[culsans_pkg::AddrTable], addr_table_resp)
+
+  ip_module i_ip_module (
+    .clk_i      ( clk_i           ),
+    .rst_ni     ( ndmreset_n      ),
+    .axi_req_i  ( addr_table_req  ),
+    .axi_resp_o ( addr_table_resp ),
+    .axi_mst_req_o  ( ),
+    .axi_mst_resp_i ( '0 )
+  );
+
+  // tie off to_xbar[2] — master port del modulo IP (per ora non usato)
+  assign to_xbar[2].aw_valid  = '0;
+  assign to_xbar[2].ar_valid  = '0;
+  assign to_xbar[2].w_valid   = '0;
+  assign to_xbar[2].b_ready   = '0;
+  assign to_xbar[2].r_ready   = '0;
 endmodule
