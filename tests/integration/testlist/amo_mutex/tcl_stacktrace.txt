@@ -1,0 +1,23 @@
+Thu Feb 26 15:22:17 CET 2026
+Trace back: grab failed: another application has grab
+    while executing
+"grab -global $menu"
+    (procedure "tk_popup" line 9)
+    invoked from within
+"tk_popup $menu $x $y"
+    (procedure "mti_popupinternal" line 15)
+    invoked from within
+"mti_popupinternal .main_pane.wave.interior.cs.body.pw.wf.wavenameareapopup_popup .main_pane.wave.interior.cs.body.pw.wf.grid.row0,name.data"
+    ("after" script)
+  <2:/eda/Siemens/2024-25/RHELx86/QUESTA-CORE-PRIME_2024.3/questasim/linux_x86_64/tk8.6/bgerror.tcl:106: ::tkerror {grab failed: another application has grab}
+  <1:eval:1: ::tk::dialog::error::bgerror {grab failed: another application has grab}
+Thu Feb 26 15:22:47 CET 2026
+Trace back: can't read "vsimPriv(.main_pane.wave.interior.cs.body.pw.wf.grid.row0,name.data:tree)": no such element in array
+    while executing
+"Wave::SetDefaultTree $vsimPriv($widget:tree)"
+    (procedure "Wave::Name1Down" line 12)
+    invoked from within
+"Wave::Name1Down .main_pane.wave.interior.cs.body.pw.wf.grid.row0,name.data 99 116"
+    (command bound to event)
+  <2:/eda/Siemens/2024-25/RHELx86/QUESTA-CORE-PRIME_2024.3/questasim/linux_x86_64/tk8.6/bgerror.tcl:106: ::tkerror {can't read "vsimPriv(.main_pane.wave.interior.cs.body.pw.wf.grid.row0,name.data:tree)": no such element in array}
+  <1:/mtitcl/vsim/vsiminit.tc_:530: ::tk::dialog::error::bgerror {can't read "vsimPriv(.main_pane.wave.interior.cs.body.pw.wf.grid.row0,name.data:tree)": no such element in array}

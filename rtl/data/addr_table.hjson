@@ -18,7 +18,7 @@
       multireg: {
         name: "DATA",
         desc: "Entry register",
-        count: "25",
+        count: "4",
         cname: "data",
         swaccess: "rw",
         hwaccess: "hro",
@@ -31,7 +31,7 @@
       multireg: {
         name: "VALID",
         desc: "Valid bit for entry N",
-        count: "25",
+        count: "4",
         cname: "valid",
         swaccess: "rw",
         hwaccess: "hro",
@@ -42,6 +42,18 @@
           }
         ]
       }
+    },
+    {
+      name: "START",
+      desc: "When core0 finishes to fill the add table, we set this reg and we start with the invalidation process",
+      swaccess: "rw",
+      hwaccess: "hro",
+      fields: [
+        { bits: "0",
+          name: "start",
+          desc: "Start signal for the invalidation process"
+        }
+      ]
     }
   ]
 }

@@ -48,7 +48,7 @@ VERILATOR_LIB = ../../work_verilate
 
 TOP_LEVEL = culsans_tb
 SIM_TCL = sim.tcl
-SIM_RUNTIME ?= 100ms
+SIM_RUNTIME ?= 100 ms
 
 
 #UVM_FLAGS = +UVM_NO_RELNOTES +UVM_VERBOSITY=LOW

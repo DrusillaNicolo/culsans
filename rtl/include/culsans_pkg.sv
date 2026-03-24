@@ -11,7 +11,7 @@
 
 package culsans_pkg;
 
-  localparam NB_CORES = 4; // 2~4 number of cores
+  localparam NB_CORES = 2; // 2~4 number of cores
 
   // M-Mode Hart, S-Mode Hart
   localparam int unsigned NumTargets = 2*NB_CORES;
@@ -19,7 +19,7 @@ package culsans_pkg;
   localparam int unsigned NumSources = 30;
   localparam int unsigned MaxPriority = 7;
 
-  localparam NrSlaves = 3; // actually masters, but slaves on the crossbar
+  localparam NrSlaves = 2; // actually masters, but slaves on the crossbar
 
   // 4 is recommended by AXI standard, so lets stick to it, do not change
   localparam IdWidth = 4;
