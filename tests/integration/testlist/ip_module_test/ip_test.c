@@ -40,7 +40,7 @@ void ip_invalidation_test(int cid) {
 
         // (Opzionale) Mettiamo una fence di sicurezza per assicurarci che i registri 
         // sopra siano stati scritti sul bus prima di dare lo START.
-        asm volatile("fence" ::: "memory");
+        //asm volatile("fence" ::: "memory");
 
         // 4. Boom! Diamo il via alla FSM del modulo hardware
         *(volatile uint64_t*)(ADDR_TABLE_BASE + ADDR_TABLE_START_REG_OFFSET) = 1;

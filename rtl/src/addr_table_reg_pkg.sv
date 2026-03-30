@@ -51,13 +51,14 @@ package addr_table_reg_pkg;
   } addr_table_id_e;
 
   // Register width information to check illegal writes
-  parameter logic [3:0] ADDR_TABLE_PERMIT [6] = '{
-    4'b 1111, // index[0] ADDR_TABLE_DATA_0
-    4'b 1111, // index[1] ADDR_TABLE_DATA_1
-    4'b 1111, // index[2] ADDR_TABLE_DATA_2
-    4'b 1111, // index[3] ADDR_TABLE_DATA_3
-    4'b 0001, // index[4] ADDR_TABLE_VALID
-    4'b 0001  // index[5] ADDR_TABLE_START
+
+  parameter logic [7:0] ADDR_TABLE_PERMIT [6] = '{
+    8'b 11111111, // index[0] ADDR_TABLE_DATA_0
+    8'b 11111111, // index[1] ADDR_TABLE_DATA_1
+    8'b 11111111, // index[2] ADDR_TABLE_DATA_2
+    8'b 11111111, // index[3] ADDR_TABLE_DATA_3
+    8'b 00000001, // index[4] ADDR_TABLE_VALID
+    8'b 00000001  // index[5] ADDR_TABLE_START
   };
 
 endpackage

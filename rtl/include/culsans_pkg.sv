@@ -24,7 +24,7 @@ package culsans_pkg;
   // 4 is recommended by AXI standard, so lets stick to it, do not change
   localparam IdWidth = 4;
   localparam IdWidthToXbar = IdWidth + $clog2(NB_CORES + 1) + $clog2(NrSlaves+1);
-  localparam IdWidthSlave = IdWidthToXbar + $clog2(NrSlaves);
+  localparam IdWidthSlave = IdWidthToXbar + $clog2(NrSlaves );
 
   // IAddress table
    localparam logic[63:0] AddrTableLength = 64'h1000; //4 KByte of address table//4 KByte of address table
