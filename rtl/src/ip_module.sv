@@ -1,3 +1,5 @@
+
+// VERSIONE FUNZIONANTE
 `include "register_interface/typedef.svh"
 `include "register_interface/assign.svh"
 
