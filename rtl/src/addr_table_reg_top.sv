@@ -18,6 +18,7 @@ module addr_table_reg_top #(
   output reg_rsp_t reg_rsp_o,
   // To HW
   output addr_table_reg_pkg::addr_table_reg2hw_t reg2hw, // Write
+  input  addr_table_reg_pkg::addr_table_hw2reg_t hw2reg, // Read
 
 
   // Config
@@ -330,8 +331,8 @@ module addr_table_reg_top #(
     .wd     (start_wd),
 
     // from internal hardware
-    .de     (1'b0),
-    .d      ('0  ),
+    .de     (hw2reg.start.de),
+    .d      (hw2reg.start.d ),
 
     // to internal hardware
     .qe     (),
@@ -456,6 +457,7 @@ module addr_table_reg_top_intf
   REG_BUS.in  regbus_slave,
   // To HW
   output addr_table_reg_pkg::addr_table_reg2hw_t reg2hw, // Write
+  input  addr_table_reg_pkg::addr_table_hw2reg_t hw2reg, // Read
   // Config
   input devmode_i // If 1, explicit error return for unmapped register access
 );
@@ -489,6 +491,7 @@ module addr_table_reg_top_intf
     .reg_req_i(s_reg_req),
     .reg_rsp_o(s_reg_rsp),
     .reg2hw, // Write
+    .hw2reg, // Read
     .devmode_i
   );
   

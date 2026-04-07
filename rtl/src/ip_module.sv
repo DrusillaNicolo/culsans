@@ -1,5 +1,4 @@
-
-// VERSIONE FUNZIONANTE
+// VERSIONE FUNZIONANTE, CON AUTO-CLEAR HARDWARE, FIX ARLEN=1, FIX R.LAST E FIX ARCACHE=4'b1111
 `include "register_interface/typedef.svh"
 `include "register_interface/assign.svh"
 
@@ -19,9 +18,9 @@ module ip_module #(
 );
 
     // =========================================================================
-    // 1. TIPI E BYPASS AXI -> REG (Addio axi_to_reg bacato!)
+    // 1. TIPI E BYPASS AXI -> REG
     // =========================================================================
-    typedef logic [5:0] reg_addr_t; 
+    typedef logic [5:0] reg_addr_t;
     typedef logic [63:0] reg_data_t;
     typedef logic [7:0]  reg_strb_t;
     `REG_BUS_TYPEDEF_ALL(reg_bus, reg_addr_t, reg_data_t, reg_strb_t)
@@ -29,21 +28,20 @@ module ip_module #(
     reg_bus_req_t reg_req;
     reg_bus_rsp_t reg_rsp;
 
-    // --- LOGICA CUSTOM AXI-TO-REG ---
     logic write_trans;
     logic read_trans;
 
-    // AXI Rule: Uniamo AW e W. La transazione parte solo quando abbiamo entrambi.
+   
     assign write_trans = axi_req_i.aw_valid & axi_req_i.w_valid;
     assign read_trans  = axi_req_i.ar_valid;
 
-    // Mux verso i registri
+  
     always_comb begin
         reg_req = '0;
         if (write_trans) begin
             reg_req.valid = 1'b1;
             reg_req.write = 1'b1;
-            reg_req.addr  = axi_req_i.aw.addr[5:0]; // Prendiamo l'offset
+            reg_req.addr  = axi_req_i.aw.addr[5:0]; 
             reg_req.wdata = axi_req_i.w.data;
             reg_req.wstrb = axi_req_i.w.strb;
         end else if (read_trans) begin
@@ -53,12 +51,14 @@ module ip_module #(
         end
     end
 
-    // Handshake verso l'AXI Master (i READY vanno a 1 solo quando i registri sono pronti)
+    
     assign axi_resp_o.aw_ready = reg_rsp.ready & axi_req_i.w_valid;
     assign axi_resp_o.w_ready  = reg_rsp.ready & axi_req_i.aw_valid;
-    assign axi_resp_o.ar_ready = reg_rsp.ready & (~write_trans); // Priorità alle scritture
+    assign axi_resp_o.ar_ready = reg_rsp.ready & (~write_trans); 
 
-    // Macchina a stati per BVALID e RVALID
+    // =========================================================================
+    // FSM FOR THE HANDSHAKE OF RESPONSES (B VALID PER WRITE, R VALID PER READ)
+    // =========================================================================
     always_ff @(posedge clk_i or negedge rst_ni) begin
         if (!rst_ni) begin
             axi_resp_o.b_valid <= 1'b0;
@@ -66,19 +66,18 @@ module ip_module #(
             axi_resp_o.r_valid <= 1'b0;
             axi_resp_o.r       <= '0;
         end else begin
-            // --- CANALE B (Risposta Scrittura) ---
+            
             if (axi_resp_o.b_valid && axi_req_i.b_ready) begin
-                axi_resp_o.b_valid <= 1'b0; // Chiude l'handshake B
+                axi_resp_o.b_valid <= 1'b0; 
             end else if (write_trans && reg_rsp.ready) begin
-                axi_resp_o.b_valid <= 1'b1; // Alza BVALID!
+                axi_resp_o.b_valid <= 1'b1; 
                 axi_resp_o.b.id    <= axi_req_i.aw.id;
                 axi_resp_o.b.resp  <= reg_rsp.error ? 2'b10 : 2'b00;
                 axi_resp_o.b.user  <= '0;
             end
 
-            // --- CANALE R (Risposta Lettura) ---
             if (axi_resp_o.r_valid && axi_req_i.r_ready) begin
-                axi_resp_o.r_valid <= 1'b0; // Chiude l'handshake R
+                axi_resp_o.r_valid <= 1'b0; 
             end else if (read_trans && reg_rsp.ready && !write_trans) begin
                 axi_resp_o.r_valid <= 1'b1;
                 axi_resp_o.r.id    <= axi_req_i.ar.id;
@@ -89,12 +88,13 @@ module ip_module #(
             end
         end
     end
-    // --------------------------------
+    
 
     // =========================================================================
-    // 2. REGISTRI GENERATI DA REGTOOL
+    //  REGTOOL
     // =========================================================================
     addr_table_reg_pkg::addr_table_reg2hw_t reg2hw;
+    addr_table_reg_pkg::addr_table_hw2reg_t hw2reg;
     
     addr_table_reg_top #(
         .reg_req_t ( reg_bus_req_t ),
@@ -103,13 +103,14 @@ module ip_module #(
         .clk_i      ( clk_i     ),
         .rst_ni     ( rst_ni    ),
         .reg_req_i  ( reg_req   ),
-        .reg_rsp_o  ( reg_rsp   ), // <- Lo colleghiamo dritto per dritto
+        .reg_rsp_o  ( reg_rsp   ),
         .reg2hw     ( reg2hw    ),
+        .hw2reg     ( hw2reg    ),
         .devmode_i  ( 1'b1      )
     );
 
     // =========================================================================
-    // 3. FSM (Invariata)
+    //  FSM
     // =========================================================================
     typedef enum logic [1:0] {
         IDLE,
@@ -135,6 +136,8 @@ module ip_module #(
         next_state     = curr_state;
         next_entry_idx = entry_idx;
 
+        hw2reg = '0;
+
         case (curr_state)
             IDLE: begin
                 next_entry_idx = '0;
@@ -145,6 +148,10 @@ module ip_module #(
             SEND: begin
                 if (entry_idx == NUM_ENTRIES) begin
                     next_state = IDLE;
+                    
+                    hw2reg.start.d  = 1'b0;
+                    hw2reg.start.de = 1'b1;
+                    
                 end else if (reg2hw.valid[entry_idx].q == 1'b0) begin
                     next_entry_idx = entry_idx + 1;
                 end else begin
@@ -161,7 +168,8 @@ module ip_module #(
             end
 
             WAIT_R: begin
-                if (ace_resp_i.r_valid) begin
+                // <-- FIX: r.last scritto corretto
+                if (ace_resp_i.r_valid && ace_resp_i.r.last) begin
                     next_entry_idx = entry_idx + 1;
                     next_state     = SEND;
                 end
@@ -172,7 +180,7 @@ module ip_module #(
     end
 
     // =========================================================================
-    // 3.5 SNOOP RESPONDER (Invariata)
+    //  SNOOP RESPONDER
     // =========================================================================
     logic cr_valid_q;
 
@@ -187,14 +195,35 @@ module ip_module #(
     end
 
     // =========================================================================
-    // 4. LOGICA USCITE (Invariata)
+    // RACK SIGNAL(OPTIONAL?)
+    // =========================================================================
+    logic rack_q;
+
+    always_ff @(posedge clk_i or negedge rst_ni) begin
+        if (!rst_ni) begin
+            rack_q <= 1'b0;
+        end else begin
+            
+            if (curr_state == WAIT_R && ace_resp_i.r_valid && ace_resp_i.r.last) begin
+                rack_q <= 1'b1;
+            end else begin
+                rack_q <= 1'b0;
+            end
+        end
+    end
+ 
+
+    // =========================================================================
+    // OUTPUT LOGIC
     // =========================================================================
     always_comb begin
         ace_req_o = '0;
         ace_req_o.ac_ready = 1'b1;
         ace_req_o.cr_valid = cr_valid_q;
         ace_req_o.cr_resp  = 5'b00000;
-        ace_req_o.rack = 1'b0;
+        
+        ace_req_o.rack = rack_q; 
+        
         ace_req_o.wack = 1'b0;
 
         case (curr_state)
@@ -202,32 +231,32 @@ module ip_module #(
                 if (entry_idx < NUM_ENTRIES && reg2hw.valid[entry_idx].q == 1'b1) begin
                     ace_req_o.ar_valid  = 1'b1;
                     ace_req_o.ar.addr   = reg2hw.data[entry_idx].q;
-                    ace_req_o.ar.snoop  = 4'b1001; // CLEAN_INVALID
-                    ace_req_o.ar.domain = 2'b10;
-                    ace_req_o.ar.len    = '0;
+                    ace_req_o.ar.snoop  = 4'b1011; // COD.B CLEAN UNIQUE
+                    ace_req_o.ar.domain = 2'b01;
+                    ace_req_o.ar.len    = 8'h01;   
                     ace_req_o.ar.size   = 3'b011;
                     ace_req_o.ar.burst  = 2'b01;
                     ace_req_o.ar.id     = '0;
                     ace_req_o.ar.bar    = '0;
                     ace_req_o.ar.lock   = '0;
-                    ace_req_o.ar.cache  = 4'b0010;
+                    ace_req_o.ar.cache  = 4'b1111; // Cacheable
                 end
             end
             WAIT_AR: begin
                 ace_req_o.ar_valid  = 1'b1;
                 ace_req_o.ar.addr   = reg2hw.data[entry_idx].q;
-                ace_req_o.ar.snoop  = 4'b1001; // CLEAN_INVALID
-                ace_req_o.ar.domain = 2'b10;
-                ace_req_o.ar.len    = '0;
+                ace_req_o.ar.snoop  = 4'b1011; // COD.B CLEAN UNIQUE
+                ace_req_o.ar.domain = 2'b01;
+                ace_req_o.ar.len    = 8'h01;  
                 ace_req_o.ar.size   = 3'b011;
                 ace_req_o.ar.burst  = 2'b01;
                 ace_req_o.ar.id     = '0;
                 ace_req_o.ar.bar    = '0;
                 ace_req_o.ar.lock   = '0;
-                ace_req_o.ar.cache  = 4'b0010;
+                ace_req_o.ar.cache  = 4'b1111; // Cacheable
             end
             WAIT_R: begin
-                ace_req_o.r_ready = 1'b1;
+                ace_req_o.r_ready = 1'b1; 
             end
             default: ;
         endcase

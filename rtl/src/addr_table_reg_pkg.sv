@@ -25,12 +25,22 @@ package addr_table_reg_pkg;
     logic        q;
   } addr_table_reg2hw_start_reg_t;
 
+  typedef struct packed {
+    logic        d;
+    logic        de;
+  } addr_table_hw2reg_start_reg_t;
+
   // Register -> HW type
   typedef struct packed {
     addr_table_reg2hw_data_mreg_t [3:0] data; // [260:5]
     addr_table_reg2hw_valid_mreg_t [3:0] valid; // [4:1]
     addr_table_reg2hw_start_reg_t start; // [0:0]
   } addr_table_reg2hw_t;
+
+  // HW -> register type
+  typedef struct packed {
+    addr_table_hw2reg_start_reg_t start; // [1:0]
+  } addr_table_hw2reg_t;
 
   // Register offsets
   parameter logic [BlockAw-1:0] ADDR_TABLE_DATA_0_OFFSET = 6'h 0;

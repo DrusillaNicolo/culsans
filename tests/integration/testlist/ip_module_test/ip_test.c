@@ -3,46 +3,78 @@
 #include <stdint.h>
 
 #define ADDR_TABLE_BASE 0x50000000UL
-
 extern void exit(int);
 
-// 128 bit (16 Byte) corrispondono esattamente a 1 cache line nella vostra architettura
 #define uint128_t __uint128_t
-#define NUM_CACHELINES 3 // Riduciamo a 3 per il test del tuo modulo
+#define NUM_CACHELINES 3 
 
-// Il linker piazzerà questo array nell'indirizzo RAM corretto e cacheabile
+// Entrambe le variabili nella sezione condivisa/uncached!
 uint128_t data[NUM_CACHELINES] __attribute__((section(".cache_share_region")));
+volatile uint32_t sync_flag __attribute__((section(".cache_share_region"))) = 0; 
 
 void ip_invalidation_test(int cid) {
     
-    // Lavora solo il Core 0
+    // ==========================================
+    // CORE 0: Il Capo (Scrive e comanda l'IP)
+    // ==========================================
     if (cid == 0) {
         
-        // 1. Il Core 0 inizializza le 3 cache line.
-        // Scrivendoci dentro (data[i] = i+1), il core invia una richiesta
-        // alla CCU (probabilmente ReadUnique) per diventarne proprietario esclusivo.
+        // 1. Inizializza le 3 cache line
         for (int i = 0; i < NUM_CACHELINES; i++) {
             data[i] = i + 1;
-            
-            // Verifica di aver scritto e letto correttamente dalla sua cache L1
             if (data[i] != i + 1)
                 exit(i + 1);
         }
 
-        // 2. Passiamo gli indirizzi fisici di queste 3 variabili al tuo modulo IP
-        // Usiamo "&data[i]" per ricavare l'indirizzo esatto che il linker ha assegnato.
+        // 2. Configura l'IP
         *(volatile uint64_t*)(ADDR_TABLE_BASE + ADDR_TABLE_DATA_0_REG_OFFSET) = (uint64_t)&data[0];
         *(volatile uint64_t*)(ADDR_TABLE_BASE + ADDR_TABLE_DATA_1_REG_OFFSET) = (uint64_t)&data[1];
         *(volatile uint64_t*)(ADDR_TABLE_BASE + ADDR_TABLE_DATA_2_REG_OFFSET) = (uint64_t)&data[2];
 
-        // 3. Setta i bit valid (0b0111 = 7) per indicare che le prime 3 entry sono valide
+        // 3. Setta valid
         *(volatile uint64_t*)(ADDR_TABLE_BASE + ADDR_TABLE_VALID_REG_OFFSET) = 0x7;
 
-        // (Opzionale) Mettiamo una fence di sicurezza per assicurarci che i registri 
-        // sopra siano stati scritti sul bus prima di dare lo START.
-        //asm volatile("fence" ::: "memory");
-
-        // 4. Boom! Diamo il via alla FSM del modulo hardware
+        // 4. Boom! Start
         *(volatile uint64_t*)(ADDR_TABLE_BASE + ADDR_TABLE_START_REG_OFFSET) = 1;
+
+        // 5. ATTESA SOFTWARE
+        for (volatile int delay = 0; delay < 5000; delay++) {
+            __asm__ volatile ("nop");
+        }
+        
+        // Barriera: Assicura che tutto ciò che è successo prima sia visibile in RAM
+        // prima di scrivere la flag di sincronizzazione.
+        __asm__ volatile ("fence rw, rw" ::: "memory");
+
+        // 6. SBLOCCA IL CORE 1
+        sync_flag = 1; 
+    }
+
+    // ==========================================
+    // CORE 1: Il Lettore (Aspetta e verifica)
+    // ==========================================
+    else if (cid == 1) {
+        
+        // 1. BARRIERA DI ATTESA (Spinlock)
+        while (sync_flag == 0) {
+            __asm__ volatile ("nop");
+        }
+
+        // 2. FENCE DI LETTURA (CRUCIALE!)
+        // Assicura che le istruzioni successive leggano i dati aggiornati dalla RAM
+        // solo DOPO che il blocco del while è stato superato.
+        __asm__ volatile ("fence r, r" ::: "memory");
+        
+        // 3. VERIFICA I DATI (Non sovrascriverli!)
+        for (int i = 0; i < NUM_CACHELINES; i++) {
+            
+           volatile uint128_t read_line = data[i];
+        }
+        
+for (volatile int wait = 0; wait < 1000; wait++) {
+            __asm__ volatile ("nop");
+        }
+        
+        exit(0); // Ora puoi spegnere tutto.
     }
 }

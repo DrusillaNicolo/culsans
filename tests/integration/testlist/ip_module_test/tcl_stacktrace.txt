@@ -1,0 +1,20 @@
+Tue Apr 07 15:44:48 CEST 2026
+Trace back: can't read "vsimPriv(.main_pane.wave.interior.cs.body.pw.wf.grid.row0,name.data:tree)": no such element in array
+    while executing
+"Wave::SetDefaultTree $vsimPriv($widget:tree)"
+    (procedure "Wave::Name1Down" line 12)
+    invoked from within
+"Wave::Name1Down .main_pane.wave.interior.cs.body.pw.wf.grid.row0,name.data 79 314"
+    (command bound to event)
+  <2:/eda/Siemens/2024-25/RHELx86/QUESTA-CORE-PRIME_2024.3/questasim/linux_x86_64/tk8.6/bgerror.tcl:106: ::tkerror {can't read "vsimPriv(.main_pane.wave.interior.cs.body.pw.wf.grid.row0,name.data:tree)": no such element in array}
+  <1:eval:1: ::tk::dialog::error::bgerror {can't read "vsimPriv(.main_pane.wave.interior.cs.body.pw.wf.grid.row0,name.data:tree)": no such element in array}
+Tue Apr 07 15:45:18 CEST 2026
+Trace back: can't read "vsimPriv(.main_pane.wave.interior.cs.body.pw.wf.grid.row0,name.data:tree)": no such element in array
+    while executing
+"Wave::SetDefaultTree $vsimPriv($widget:tree)"
+    (procedure "Wave::Name1Down" line 12)
+    invoked from within
+"Wave::Name1Down .main_pane.wave.interior.cs.body.pw.wf.grid.row0,name.data 79 328"
+    (command bound to event)
+  <2:/eda/Siemens/2024-25/RHELx86/QUESTA-CORE-PRIME_2024.3/questasim/linux_x86_64/tk8.6/bgerror.tcl:106: ::tkerror {can't read "vsimPriv(.main_pane.wave.interior.cs.body.pw.wf.grid.row0,name.data:tree)": no such element in array}
+  <1:proc:24: ::tk::dialog::error::bgerror {can't read "vsimPriv(.main_pane.wave.interior.cs.body.pw.wf.grid.row0,name.data:tree)": no such element in array}
