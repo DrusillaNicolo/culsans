@@ -12,18 +12,31 @@
       direction: "device",
     },
   ],
-  regwidth: "64",
+  regwidth: "32",
   registers: [
     {
       multireg: {
-        name: "DATA",
-        desc: "Entry register",
+        name: "START_ADDR",
+        desc: "Start address of the entry",
         count: "4",
-        cname: "data",
+        cname: "start_addr",
         swaccess: "rw",
         hwaccess: "hro",
         fields: [
-          { bits: "63:0" }
+          { bits: "31:0" }
+        ]
+      }
+    },
+        {
+      multireg: {
+        name: "END_ADDR",
+        desc: "End address of the entry",
+        count: "4",
+        cname: "end_addr",
+        swaccess: "rw",
+        hwaccess: "hro",
+        fields: [
+          { bits: "31:0" }
         ]
       }
     },
@@ -36,9 +49,41 @@
         swaccess: "rw",
         hwaccess: "hro",
         fields: [
-          { bits: "0",
+          { bits: "31:0",
             name: "valid",
             desc: "Set by SW if the entry is valid"
+          }
+        ]
+      }
+    },
+        {
+      multireg: {
+        name: "DIRTY",
+        desc: "Dirty bit for entry N",
+        count: "4",
+        cname: "dirty",
+        swaccess: "rw",
+        hwaccess: "hro",
+        fields: [
+          { bits: "31:0",
+            name: "dirty",
+            desc: "Set by SW if the entry is dirty"
+          }
+        ]
+      }
+    },
+            {
+      multireg: {
+        name: "SHARED",
+        desc: "Shared bit for entry N",
+        count: "4",
+        cname: "shared",
+        swaccess: "rw",
+        hwaccess: "hrw",
+        fields: [
+          { bits: "31:0",
+            name: "shared",
+            desc: "Set by SW if the entry is shared"
           }
         ]
       }
@@ -52,6 +97,18 @@
         { bits: "0",
           name: "start",
           desc: "Start signal for the invalidation process"
+        }
+      ]
+    },
+    {
+      name: "END_FLAG",
+      desc: "Flag indicating the end of the invalidation process",
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "0",
+          name: "end_flag",
+          desc: "Flag indicating the end of the invalidation process"
         }
       ]
     }

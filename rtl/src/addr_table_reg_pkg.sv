@@ -7,68 +7,148 @@
 package addr_table_reg_pkg;
 
   // Address widths within the block
-  parameter int BlockAw = 6;
+  parameter int BlockAw = 7;
 
   ////////////////////////////
   // Typedefs for registers //
   ////////////////////////////
 
   typedef struct packed {
-    logic [63:0] q;
-  } addr_table_reg2hw_data_mreg_t;
+    logic [31:0] q;
+  } addr_table_reg2hw_start_addr_mreg_t;
 
   typedef struct packed {
-    logic        q;
+    logic [31:0] q;
+  } addr_table_reg2hw_end_addr_mreg_t;
+
+  typedef struct packed {
+    logic [31:0] q;
   } addr_table_reg2hw_valid_mreg_t;
+
+  typedef struct packed {
+    logic [31:0] q;
+  } addr_table_reg2hw_dirty_mreg_t;
+
+  typedef struct packed {
+    logic [31:0] q;
+  } addr_table_reg2hw_shared_mreg_t;
 
   typedef struct packed {
     logic        q;
   } addr_table_reg2hw_start_reg_t;
 
   typedef struct packed {
+    logic        q;
+  } addr_table_reg2hw_end_flag_reg_t;
+
+  typedef struct packed {
+    logic [31:0] d;
+    logic        de;
+  } addr_table_hw2reg_shared_mreg_t;
+
+  typedef struct packed {
     logic        d;
     logic        de;
   } addr_table_hw2reg_start_reg_t;
 
+  typedef struct packed {
+    logic        d;
+    logic        de;
+  } addr_table_hw2reg_end_flag_reg_t;
+
   // Register -> HW type
   typedef struct packed {
-    addr_table_reg2hw_data_mreg_t [3:0] data; // [260:5]
-    addr_table_reg2hw_valid_mreg_t [3:0] valid; // [4:1]
-    addr_table_reg2hw_start_reg_t start; // [0:0]
+    addr_table_reg2hw_start_addr_mreg_t [3:0] start_addr; // [641:514]
+    addr_table_reg2hw_end_addr_mreg_t [3:0] end_addr; // [513:386]
+    addr_table_reg2hw_valid_mreg_t [3:0] valid; // [385:258]
+    addr_table_reg2hw_dirty_mreg_t [3:0] dirty; // [257:130]
+    addr_table_reg2hw_shared_mreg_t [3:0] shared; // [129:2]
+    addr_table_reg2hw_start_reg_t start; // [1:1]
+    addr_table_reg2hw_end_flag_reg_t end_flag; // [0:0]
   } addr_table_reg2hw_t;
 
   // HW -> register type
   typedef struct packed {
-    addr_table_hw2reg_start_reg_t start; // [1:0]
+    addr_table_hw2reg_shared_mreg_t [3:0] shared; // [135:4]
+    addr_table_hw2reg_start_reg_t start; // [3:2]
+    addr_table_hw2reg_end_flag_reg_t end_flag; // [1:0]
   } addr_table_hw2reg_t;
 
   // Register offsets
-  parameter logic [BlockAw-1:0] ADDR_TABLE_DATA_0_OFFSET = 6'h 0;
-  parameter logic [BlockAw-1:0] ADDR_TABLE_DATA_1_OFFSET = 6'h 8;
-  parameter logic [BlockAw-1:0] ADDR_TABLE_DATA_2_OFFSET = 6'h 10;
-  parameter logic [BlockAw-1:0] ADDR_TABLE_DATA_3_OFFSET = 6'h 18;
-  parameter logic [BlockAw-1:0] ADDR_TABLE_VALID_OFFSET = 6'h 20;
-  parameter logic [BlockAw-1:0] ADDR_TABLE_START_OFFSET = 6'h 28;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_START_ADDR_0_OFFSET = 7'h 0;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_START_ADDR_1_OFFSET = 7'h 4;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_START_ADDR_2_OFFSET = 7'h 8;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_START_ADDR_3_OFFSET = 7'h c;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_END_ADDR_0_OFFSET = 7'h 10;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_END_ADDR_1_OFFSET = 7'h 14;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_END_ADDR_2_OFFSET = 7'h 18;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_END_ADDR_3_OFFSET = 7'h 1c;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_VALID_0_OFFSET = 7'h 20;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_VALID_1_OFFSET = 7'h 24;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_VALID_2_OFFSET = 7'h 28;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_VALID_3_OFFSET = 7'h 2c;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_DIRTY_0_OFFSET = 7'h 30;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_DIRTY_1_OFFSET = 7'h 34;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_DIRTY_2_OFFSET = 7'h 38;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_DIRTY_3_OFFSET = 7'h 3c;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_SHARED_0_OFFSET = 7'h 40;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_SHARED_1_OFFSET = 7'h 44;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_SHARED_2_OFFSET = 7'h 48;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_SHARED_3_OFFSET = 7'h 4c;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_START_OFFSET = 7'h 50;
+  parameter logic [BlockAw-1:0] ADDR_TABLE_END_FLAG_OFFSET = 7'h 54;
 
   // Register index
   typedef enum int {
-    ADDR_TABLE_DATA_0,
-    ADDR_TABLE_DATA_1,
-    ADDR_TABLE_DATA_2,
-    ADDR_TABLE_DATA_3,
-    ADDR_TABLE_VALID,
-    ADDR_TABLE_START
+    ADDR_TABLE_START_ADDR_0,
+    ADDR_TABLE_START_ADDR_1,
+    ADDR_TABLE_START_ADDR_2,
+    ADDR_TABLE_START_ADDR_3,
+    ADDR_TABLE_END_ADDR_0,
+    ADDR_TABLE_END_ADDR_1,
+    ADDR_TABLE_END_ADDR_2,
+    ADDR_TABLE_END_ADDR_3,
+    ADDR_TABLE_VALID_0,
+    ADDR_TABLE_VALID_1,
+    ADDR_TABLE_VALID_2,
+    ADDR_TABLE_VALID_3,
+    ADDR_TABLE_DIRTY_0,
+    ADDR_TABLE_DIRTY_1,
+    ADDR_TABLE_DIRTY_2,
+    ADDR_TABLE_DIRTY_3,
+    ADDR_TABLE_SHARED_0,
+    ADDR_TABLE_SHARED_1,
+    ADDR_TABLE_SHARED_2,
+    ADDR_TABLE_SHARED_3,
+    ADDR_TABLE_START,
+    ADDR_TABLE_END_FLAG
   } addr_table_id_e;
 
   // Register width information to check illegal writes
 
-  parameter logic [7:0] ADDR_TABLE_PERMIT [6] = '{
-    8'b 11111111, // index[0] ADDR_TABLE_DATA_0
-    8'b 11111111, // index[1] ADDR_TABLE_DATA_1
-    8'b 11111111, // index[2] ADDR_TABLE_DATA_2
-    8'b 11111111, // index[3] ADDR_TABLE_DATA_3
-    8'b 00000001, // index[4] ADDR_TABLE_VALID
-    8'b 00000001  // index[5] ADDR_TABLE_START
+  parameter logic [3:0] ADDR_TABLE_PERMIT [22] = '{
+    4'b 1111, // index[ 0] ADDR_TABLE_START_ADDR_0
+    4'b 1111, // index[ 1] ADDR_TABLE_START_ADDR_1
+    4'b 1111, // index[ 2] ADDR_TABLE_START_ADDR_2
+    4'b 1111, // index[ 3] ADDR_TABLE_START_ADDR_3
+    4'b 1111, // index[ 4] ADDR_TABLE_END_ADDR_0
+    4'b 1111, // index[ 5] ADDR_TABLE_END_ADDR_1
+    4'b 1111, // index[ 6] ADDR_TABLE_END_ADDR_2
+    4'b 1111, // index[ 7] ADDR_TABLE_END_ADDR_3
+    4'b 1111, // index[ 8] ADDR_TABLE_VALID_0
+    4'b 1111, // index[ 9] ADDR_TABLE_VALID_1
+    4'b 1111, // index[10] ADDR_TABLE_VALID_2
+    4'b 1111, // index[11] ADDR_TABLE_VALID_3
+    4'b 1111, // index[12] ADDR_TABLE_DIRTY_0
+    4'b 1111, // index[13] ADDR_TABLE_DIRTY_1
+    4'b 1111, // index[14] ADDR_TABLE_DIRTY_2
+    4'b 1111, // index[15] ADDR_TABLE_DIRTY_3
+    4'b 1111, // index[16] ADDR_TABLE_SHARED_0
+    4'b 1111, // index[17] ADDR_TABLE_SHARED_1
+    4'b 1111, // index[18] ADDR_TABLE_SHARED_2
+    4'b 1111, // index[19] ADDR_TABLE_SHARED_3
+    4'b 0001, // index[20] ADDR_TABLE_START
+    4'b 0001  // index[21] ADDR_TABLE_END_FLAG
   };
 
 endpackage

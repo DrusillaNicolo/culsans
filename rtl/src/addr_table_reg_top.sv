@@ -10,7 +10,7 @@
 module addr_table_reg_top #(
   parameter type reg_req_t = logic,
   parameter type reg_rsp_t = logic,
-  parameter int AW = 6
+  parameter int AW = 7
 ) (
   input logic clk_i,
   input logic rst_ni,
@@ -27,7 +27,7 @@ module addr_table_reg_top #(
 
   import addr_table_reg_pkg::* ;
 
-  localparam int DW = 64;
+  localparam int DW = 32;
   localparam int DBW = DW/8;                    // Byte Width
 
   // register signals
@@ -68,50 +68,89 @@ module addr_table_reg_top #(
   // Define SW related signals
   // Format: <reg>_<field>_{wd|we|qs}
   //        or <reg>_{wd|we|qs} if field == 1 or 0
-  logic [63:0] data_0_qs;
-  logic [63:0] data_0_wd;
-  logic data_0_we;
-  logic [63:0] data_1_qs;
-  logic [63:0] data_1_wd;
-  logic data_1_we;
-  logic [63:0] data_2_qs;
-  logic [63:0] data_2_wd;
-  logic data_2_we;
-  logic [63:0] data_3_qs;
-  logic [63:0] data_3_wd;
-  logic data_3_we;
-  logic valid_valid_0_qs;
-  logic valid_valid_0_wd;
-  logic valid_valid_0_we;
-  logic valid_valid_1_qs;
-  logic valid_valid_1_wd;
-  logic valid_valid_1_we;
-  logic valid_valid_2_qs;
-  logic valid_valid_2_wd;
-  logic valid_valid_2_we;
-  logic valid_valid_3_qs;
-  logic valid_valid_3_wd;
-  logic valid_valid_3_we;
+  logic [31:0] start_addr_0_qs;
+  logic [31:0] start_addr_0_wd;
+  logic start_addr_0_we;
+  logic [31:0] start_addr_1_qs;
+  logic [31:0] start_addr_1_wd;
+  logic start_addr_1_we;
+  logic [31:0] start_addr_2_qs;
+  logic [31:0] start_addr_2_wd;
+  logic start_addr_2_we;
+  logic [31:0] start_addr_3_qs;
+  logic [31:0] start_addr_3_wd;
+  logic start_addr_3_we;
+  logic [31:0] end_addr_0_qs;
+  logic [31:0] end_addr_0_wd;
+  logic end_addr_0_we;
+  logic [31:0] end_addr_1_qs;
+  logic [31:0] end_addr_1_wd;
+  logic end_addr_1_we;
+  logic [31:0] end_addr_2_qs;
+  logic [31:0] end_addr_2_wd;
+  logic end_addr_2_we;
+  logic [31:0] end_addr_3_qs;
+  logic [31:0] end_addr_3_wd;
+  logic end_addr_3_we;
+  logic [31:0] valid_0_qs;
+  logic [31:0] valid_0_wd;
+  logic valid_0_we;
+  logic [31:0] valid_1_qs;
+  logic [31:0] valid_1_wd;
+  logic valid_1_we;
+  logic [31:0] valid_2_qs;
+  logic [31:0] valid_2_wd;
+  logic valid_2_we;
+  logic [31:0] valid_3_qs;
+  logic [31:0] valid_3_wd;
+  logic valid_3_we;
+  logic [31:0] dirty_0_qs;
+  logic [31:0] dirty_0_wd;
+  logic dirty_0_we;
+  logic [31:0] dirty_1_qs;
+  logic [31:0] dirty_1_wd;
+  logic dirty_1_we;
+  logic [31:0] dirty_2_qs;
+  logic [31:0] dirty_2_wd;
+  logic dirty_2_we;
+  logic [31:0] dirty_3_qs;
+  logic [31:0] dirty_3_wd;
+  logic dirty_3_we;
+  logic [31:0] shared_0_qs;
+  logic [31:0] shared_0_wd;
+  logic shared_0_we;
+  logic [31:0] shared_1_qs;
+  logic [31:0] shared_1_wd;
+  logic shared_1_we;
+  logic [31:0] shared_2_qs;
+  logic [31:0] shared_2_wd;
+  logic shared_2_we;
+  logic [31:0] shared_3_qs;
+  logic [31:0] shared_3_wd;
+  logic shared_3_we;
   logic start_qs;
   logic start_wd;
   logic start_we;
+  logic end_flag_qs;
+  logic end_flag_wd;
+  logic end_flag_we;
 
   // Register instances
 
-  // Subregister 0 of Multireg data
-  // R[data_0]: V(False)
+  // Subregister 0 of Multireg start_addr
+  // R[start_addr_0]: V(False)
 
   prim_subreg #(
-    .DW      (64),
+    .DW      (32),
     .SWACCESS("RW"),
-    .RESVAL  (64'h0)
-  ) u_data_0 (
+    .RESVAL  (32'h0)
+  ) u_start_addr_0 (
     .clk_i   (clk_i    ),
     .rst_ni  (rst_ni  ),
 
     // from register interface
-    .we     (data_0_we),
-    .wd     (data_0_wd),
+    .we     (start_addr_0_we),
+    .wd     (start_addr_0_wd),
 
     // from internal hardware
     .de     (1'b0),
@@ -119,26 +158,26 @@ module addr_table_reg_top #(
 
     // to internal hardware
     .qe     (),
-    .q      (reg2hw.data[0].q ),
+    .q      (reg2hw.start_addr[0].q ),
 
     // to register interface (read)
-    .qs     (data_0_qs)
+    .qs     (start_addr_0_qs)
   );
 
-  // Subregister 1 of Multireg data
-  // R[data_1]: V(False)
+  // Subregister 1 of Multireg start_addr
+  // R[start_addr_1]: V(False)
 
   prim_subreg #(
-    .DW      (64),
+    .DW      (32),
     .SWACCESS("RW"),
-    .RESVAL  (64'h0)
-  ) u_data_1 (
+    .RESVAL  (32'h0)
+  ) u_start_addr_1 (
     .clk_i   (clk_i    ),
     .rst_ni  (rst_ni  ),
 
     // from register interface
-    .we     (data_1_we),
-    .wd     (data_1_wd),
+    .we     (start_addr_1_we),
+    .wd     (start_addr_1_wd),
 
     // from internal hardware
     .de     (1'b0),
@@ -146,26 +185,26 @@ module addr_table_reg_top #(
 
     // to internal hardware
     .qe     (),
-    .q      (reg2hw.data[1].q ),
+    .q      (reg2hw.start_addr[1].q ),
 
     // to register interface (read)
-    .qs     (data_1_qs)
+    .qs     (start_addr_1_qs)
   );
 
-  // Subregister 2 of Multireg data
-  // R[data_2]: V(False)
+  // Subregister 2 of Multireg start_addr
+  // R[start_addr_2]: V(False)
 
   prim_subreg #(
-    .DW      (64),
+    .DW      (32),
     .SWACCESS("RW"),
-    .RESVAL  (64'h0)
-  ) u_data_2 (
+    .RESVAL  (32'h0)
+  ) u_start_addr_2 (
     .clk_i   (clk_i    ),
     .rst_ni  (rst_ni  ),
 
     // from register interface
-    .we     (data_2_we),
-    .wd     (data_2_wd),
+    .we     (start_addr_2_we),
+    .wd     (start_addr_2_wd),
 
     // from internal hardware
     .de     (1'b0),
@@ -173,26 +212,26 @@ module addr_table_reg_top #(
 
     // to internal hardware
     .qe     (),
-    .q      (reg2hw.data[2].q ),
+    .q      (reg2hw.start_addr[2].q ),
 
     // to register interface (read)
-    .qs     (data_2_qs)
+    .qs     (start_addr_2_qs)
   );
 
-  // Subregister 3 of Multireg data
-  // R[data_3]: V(False)
+  // Subregister 3 of Multireg start_addr
+  // R[start_addr_3]: V(False)
 
   prim_subreg #(
-    .DW      (64),
+    .DW      (32),
     .SWACCESS("RW"),
-    .RESVAL  (64'h0)
-  ) u_data_3 (
+    .RESVAL  (32'h0)
+  ) u_start_addr_3 (
     .clk_i   (clk_i    ),
     .rst_ni  (rst_ni  ),
 
     // from register interface
-    .we     (data_3_we),
-    .wd     (data_3_wd),
+    .we     (start_addr_3_we),
+    .wd     (start_addr_3_wd),
 
     // from internal hardware
     .de     (1'b0),
@@ -200,29 +239,138 @@ module addr_table_reg_top #(
 
     // to internal hardware
     .qe     (),
-    .q      (reg2hw.data[3].q ),
+    .q      (reg2hw.start_addr[3].q ),
 
     // to register interface (read)
-    .qs     (data_3_qs)
+    .qs     (start_addr_3_qs)
+  );
+
+
+
+  // Subregister 0 of Multireg end_addr
+  // R[end_addr_0]: V(False)
+
+  prim_subreg #(
+    .DW      (32),
+    .SWACCESS("RW"),
+    .RESVAL  (32'h0)
+  ) u_end_addr_0 (
+    .clk_i   (clk_i    ),
+    .rst_ni  (rst_ni  ),
+
+    // from register interface
+    .we     (end_addr_0_we),
+    .wd     (end_addr_0_wd),
+
+    // from internal hardware
+    .de     (1'b0),
+    .d      ('0  ),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.end_addr[0].q ),
+
+    // to register interface (read)
+    .qs     (end_addr_0_qs)
+  );
+
+  // Subregister 1 of Multireg end_addr
+  // R[end_addr_1]: V(False)
+
+  prim_subreg #(
+    .DW      (32),
+    .SWACCESS("RW"),
+    .RESVAL  (32'h0)
+  ) u_end_addr_1 (
+    .clk_i   (clk_i    ),
+    .rst_ni  (rst_ni  ),
+
+    // from register interface
+    .we     (end_addr_1_we),
+    .wd     (end_addr_1_wd),
+
+    // from internal hardware
+    .de     (1'b0),
+    .d      ('0  ),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.end_addr[1].q ),
+
+    // to register interface (read)
+    .qs     (end_addr_1_qs)
+  );
+
+  // Subregister 2 of Multireg end_addr
+  // R[end_addr_2]: V(False)
+
+  prim_subreg #(
+    .DW      (32),
+    .SWACCESS("RW"),
+    .RESVAL  (32'h0)
+  ) u_end_addr_2 (
+    .clk_i   (clk_i    ),
+    .rst_ni  (rst_ni  ),
+
+    // from register interface
+    .we     (end_addr_2_we),
+    .wd     (end_addr_2_wd),
+
+    // from internal hardware
+    .de     (1'b0),
+    .d      ('0  ),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.end_addr[2].q ),
+
+    // to register interface (read)
+    .qs     (end_addr_2_qs)
+  );
+
+  // Subregister 3 of Multireg end_addr
+  // R[end_addr_3]: V(False)
+
+  prim_subreg #(
+    .DW      (32),
+    .SWACCESS("RW"),
+    .RESVAL  (32'h0)
+  ) u_end_addr_3 (
+    .clk_i   (clk_i    ),
+    .rst_ni  (rst_ni  ),
+
+    // from register interface
+    .we     (end_addr_3_we),
+    .wd     (end_addr_3_wd),
+
+    // from internal hardware
+    .de     (1'b0),
+    .d      ('0  ),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.end_addr[3].q ),
+
+    // to register interface (read)
+    .qs     (end_addr_3_qs)
   );
 
 
 
   // Subregister 0 of Multireg valid
-  // R[valid]: V(False)
+  // R[valid_0]: V(False)
 
-  // F[valid_0]: 0:0
   prim_subreg #(
-    .DW      (1),
+    .DW      (32),
     .SWACCESS("RW"),
-    .RESVAL  (1'h0)
-  ) u_valid_valid_0 (
+    .RESVAL  (32'h0)
+  ) u_valid_0 (
     .clk_i   (clk_i    ),
     .rst_ni  (rst_ni  ),
 
     // from register interface
-    .we     (valid_valid_0_we),
-    .wd     (valid_valid_0_wd),
+    .we     (valid_0_we),
+    .wd     (valid_0_wd),
 
     // from internal hardware
     .de     (1'b0),
@@ -233,22 +381,23 @@ module addr_table_reg_top #(
     .q      (reg2hw.valid[0].q ),
 
     // to register interface (read)
-    .qs     (valid_valid_0_qs)
+    .qs     (valid_0_qs)
   );
 
+  // Subregister 1 of Multireg valid
+  // R[valid_1]: V(False)
 
-  // F[valid_1]: 1:1
   prim_subreg #(
-    .DW      (1),
+    .DW      (32),
     .SWACCESS("RW"),
-    .RESVAL  (1'h0)
-  ) u_valid_valid_1 (
+    .RESVAL  (32'h0)
+  ) u_valid_1 (
     .clk_i   (clk_i    ),
     .rst_ni  (rst_ni  ),
 
     // from register interface
-    .we     (valid_valid_1_we),
-    .wd     (valid_valid_1_wd),
+    .we     (valid_1_we),
+    .wd     (valid_1_wd),
 
     // from internal hardware
     .de     (1'b0),
@@ -259,22 +408,23 @@ module addr_table_reg_top #(
     .q      (reg2hw.valid[1].q ),
 
     // to register interface (read)
-    .qs     (valid_valid_1_qs)
+    .qs     (valid_1_qs)
   );
 
+  // Subregister 2 of Multireg valid
+  // R[valid_2]: V(False)
 
-  // F[valid_2]: 2:2
   prim_subreg #(
-    .DW      (1),
+    .DW      (32),
     .SWACCESS("RW"),
-    .RESVAL  (1'h0)
-  ) u_valid_valid_2 (
+    .RESVAL  (32'h0)
+  ) u_valid_2 (
     .clk_i   (clk_i    ),
     .rst_ni  (rst_ni  ),
 
     // from register interface
-    .we     (valid_valid_2_we),
-    .wd     (valid_valid_2_wd),
+    .we     (valid_2_we),
+    .wd     (valid_2_wd),
 
     // from internal hardware
     .de     (1'b0),
@@ -285,22 +435,23 @@ module addr_table_reg_top #(
     .q      (reg2hw.valid[2].q ),
 
     // to register interface (read)
-    .qs     (valid_valid_2_qs)
+    .qs     (valid_2_qs)
   );
 
+  // Subregister 3 of Multireg valid
+  // R[valid_3]: V(False)
 
-  // F[valid_3]: 3:3
   prim_subreg #(
-    .DW      (1),
+    .DW      (32),
     .SWACCESS("RW"),
-    .RESVAL  (1'h0)
-  ) u_valid_valid_3 (
+    .RESVAL  (32'h0)
+  ) u_valid_3 (
     .clk_i   (clk_i    ),
     .rst_ni  (rst_ni  ),
 
     // from register interface
-    .we     (valid_valid_3_we),
-    .wd     (valid_valid_3_wd),
+    .we     (valid_3_we),
+    .wd     (valid_3_wd),
 
     // from internal hardware
     .de     (1'b0),
@@ -311,9 +462,228 @@ module addr_table_reg_top #(
     .q      (reg2hw.valid[3].q ),
 
     // to register interface (read)
-    .qs     (valid_valid_3_qs)
+    .qs     (valid_3_qs)
   );
 
+
+
+  // Subregister 0 of Multireg dirty
+  // R[dirty_0]: V(False)
+
+  prim_subreg #(
+    .DW      (32),
+    .SWACCESS("RW"),
+    .RESVAL  (32'h0)
+  ) u_dirty_0 (
+    .clk_i   (clk_i    ),
+    .rst_ni  (rst_ni  ),
+
+    // from register interface
+    .we     (dirty_0_we),
+    .wd     (dirty_0_wd),
+
+    // from internal hardware
+    .de     (1'b0),
+    .d      ('0  ),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.dirty[0].q ),
+
+    // to register interface (read)
+    .qs     (dirty_0_qs)
+  );
+
+  // Subregister 1 of Multireg dirty
+  // R[dirty_1]: V(False)
+
+  prim_subreg #(
+    .DW      (32),
+    .SWACCESS("RW"),
+    .RESVAL  (32'h0)
+  ) u_dirty_1 (
+    .clk_i   (clk_i    ),
+    .rst_ni  (rst_ni  ),
+
+    // from register interface
+    .we     (dirty_1_we),
+    .wd     (dirty_1_wd),
+
+    // from internal hardware
+    .de     (1'b0),
+    .d      ('0  ),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.dirty[1].q ),
+
+    // to register interface (read)
+    .qs     (dirty_1_qs)
+  );
+
+  // Subregister 2 of Multireg dirty
+  // R[dirty_2]: V(False)
+
+  prim_subreg #(
+    .DW      (32),
+    .SWACCESS("RW"),
+    .RESVAL  (32'h0)
+  ) u_dirty_2 (
+    .clk_i   (clk_i    ),
+    .rst_ni  (rst_ni  ),
+
+    // from register interface
+    .we     (dirty_2_we),
+    .wd     (dirty_2_wd),
+
+    // from internal hardware
+    .de     (1'b0),
+    .d      ('0  ),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.dirty[2].q ),
+
+    // to register interface (read)
+    .qs     (dirty_2_qs)
+  );
+
+  // Subregister 3 of Multireg dirty
+  // R[dirty_3]: V(False)
+
+  prim_subreg #(
+    .DW      (32),
+    .SWACCESS("RW"),
+    .RESVAL  (32'h0)
+  ) u_dirty_3 (
+    .clk_i   (clk_i    ),
+    .rst_ni  (rst_ni  ),
+
+    // from register interface
+    .we     (dirty_3_we),
+    .wd     (dirty_3_wd),
+
+    // from internal hardware
+    .de     (1'b0),
+    .d      ('0  ),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.dirty[3].q ),
+
+    // to register interface (read)
+    .qs     (dirty_3_qs)
+  );
+
+
+
+  // Subregister 0 of Multireg shared
+  // R[shared_0]: V(False)
+
+  prim_subreg #(
+    .DW      (32),
+    .SWACCESS("RW"),
+    .RESVAL  (32'h0)
+  ) u_shared_0 (
+    .clk_i   (clk_i    ),
+    .rst_ni  (rst_ni  ),
+
+    // from register interface
+    .we     (shared_0_we),
+    .wd     (shared_0_wd),
+
+    // from internal hardware
+    .de     (hw2reg.shared[0].de),
+    .d      (hw2reg.shared[0].d ),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.shared[0].q ),
+
+    // to register interface (read)
+    .qs     (shared_0_qs)
+  );
+
+  // Subregister 1 of Multireg shared
+  // R[shared_1]: V(False)
+
+  prim_subreg #(
+    .DW      (32),
+    .SWACCESS("RW"),
+    .RESVAL  (32'h0)
+  ) u_shared_1 (
+    .clk_i   (clk_i    ),
+    .rst_ni  (rst_ni  ),
+
+    // from register interface
+    .we     (shared_1_we),
+    .wd     (shared_1_wd),
+
+    // from internal hardware
+    .de     (hw2reg.shared[1].de),
+    .d      (hw2reg.shared[1].d ),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.shared[1].q ),
+
+    // to register interface (read)
+    .qs     (shared_1_qs)
+  );
+
+  // Subregister 2 of Multireg shared
+  // R[shared_2]: V(False)
+
+  prim_subreg #(
+    .DW      (32),
+    .SWACCESS("RW"),
+    .RESVAL  (32'h0)
+  ) u_shared_2 (
+    .clk_i   (clk_i    ),
+    .rst_ni  (rst_ni  ),
+
+    // from register interface
+    .we     (shared_2_we),
+    .wd     (shared_2_wd),
+
+    // from internal hardware
+    .de     (hw2reg.shared[2].de),
+    .d      (hw2reg.shared[2].d ),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.shared[2].q ),
+
+    // to register interface (read)
+    .qs     (shared_2_qs)
+  );
+
+  // Subregister 3 of Multireg shared
+  // R[shared_3]: V(False)
+
+  prim_subreg #(
+    .DW      (32),
+    .SWACCESS("RW"),
+    .RESVAL  (32'h0)
+  ) u_shared_3 (
+    .clk_i   (clk_i    ),
+    .rst_ni  (rst_ni  ),
+
+    // from register interface
+    .we     (shared_3_we),
+    .wd     (shared_3_wd),
+
+    // from internal hardware
+    .de     (hw2reg.shared[3].de),
+    .d      (hw2reg.shared[3].d ),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.shared[3].q ),
+
+    // to register interface (read)
+    .qs     (shared_3_qs)
+  );
 
 
   // R[start]: V(False)
@@ -343,17 +713,60 @@ module addr_table_reg_top #(
   );
 
 
+  // R[end_flag]: V(False)
+
+  prim_subreg #(
+    .DW      (1),
+    .SWACCESS("RW"),
+    .RESVAL  (1'h0)
+  ) u_end_flag (
+    .clk_i   (clk_i    ),
+    .rst_ni  (rst_ni  ),
+
+    // from register interface
+    .we     (end_flag_we),
+    .wd     (end_flag_wd),
+
+    // from internal hardware
+    .de     (hw2reg.end_flag.de),
+    .d      (hw2reg.end_flag.d ),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.end_flag.q ),
+
+    // to register interface (read)
+    .qs     (end_flag_qs)
+  );
 
 
-  logic [5:0] addr_hit;
+
+
+  logic [21:0] addr_hit;
   always_comb begin
     addr_hit = '0;
-    addr_hit[0] = (reg_addr == ADDR_TABLE_DATA_0_OFFSET);
-    addr_hit[1] = (reg_addr == ADDR_TABLE_DATA_1_OFFSET);
-    addr_hit[2] = (reg_addr == ADDR_TABLE_DATA_2_OFFSET);
-    addr_hit[3] = (reg_addr == ADDR_TABLE_DATA_3_OFFSET);
-    addr_hit[4] = (reg_addr == ADDR_TABLE_VALID_OFFSET);
-    addr_hit[5] = (reg_addr == ADDR_TABLE_START_OFFSET);
+    addr_hit[ 0] = (reg_addr == ADDR_TABLE_START_ADDR_0_OFFSET);
+    addr_hit[ 1] = (reg_addr == ADDR_TABLE_START_ADDR_1_OFFSET);
+    addr_hit[ 2] = (reg_addr == ADDR_TABLE_START_ADDR_2_OFFSET);
+    addr_hit[ 3] = (reg_addr == ADDR_TABLE_START_ADDR_3_OFFSET);
+    addr_hit[ 4] = (reg_addr == ADDR_TABLE_END_ADDR_0_OFFSET);
+    addr_hit[ 5] = (reg_addr == ADDR_TABLE_END_ADDR_1_OFFSET);
+    addr_hit[ 6] = (reg_addr == ADDR_TABLE_END_ADDR_2_OFFSET);
+    addr_hit[ 7] = (reg_addr == ADDR_TABLE_END_ADDR_3_OFFSET);
+    addr_hit[ 8] = (reg_addr == ADDR_TABLE_VALID_0_OFFSET);
+    addr_hit[ 9] = (reg_addr == ADDR_TABLE_VALID_1_OFFSET);
+    addr_hit[10] = (reg_addr == ADDR_TABLE_VALID_2_OFFSET);
+    addr_hit[11] = (reg_addr == ADDR_TABLE_VALID_3_OFFSET);
+    addr_hit[12] = (reg_addr == ADDR_TABLE_DIRTY_0_OFFSET);
+    addr_hit[13] = (reg_addr == ADDR_TABLE_DIRTY_1_OFFSET);
+    addr_hit[14] = (reg_addr == ADDR_TABLE_DIRTY_2_OFFSET);
+    addr_hit[15] = (reg_addr == ADDR_TABLE_DIRTY_3_OFFSET);
+    addr_hit[16] = (reg_addr == ADDR_TABLE_SHARED_0_OFFSET);
+    addr_hit[17] = (reg_addr == ADDR_TABLE_SHARED_1_OFFSET);
+    addr_hit[18] = (reg_addr == ADDR_TABLE_SHARED_2_OFFSET);
+    addr_hit[19] = (reg_addr == ADDR_TABLE_SHARED_3_OFFSET);
+    addr_hit[20] = (reg_addr == ADDR_TABLE_START_OFFSET);
+    addr_hit[21] = (reg_addr == ADDR_TABLE_END_FLAG_OFFSET);
   end
 
   assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0 ;
@@ -361,70 +774,186 @@ module addr_table_reg_top #(
   // Check sub-word write is permitted
   always_comb begin
     wr_err = (reg_we &
-              ((addr_hit[0] & (|(ADDR_TABLE_PERMIT[0] & ~reg_be))) |
-               (addr_hit[1] & (|(ADDR_TABLE_PERMIT[1] & ~reg_be))) |
-               (addr_hit[2] & (|(ADDR_TABLE_PERMIT[2] & ~reg_be))) |
-               (addr_hit[3] & (|(ADDR_TABLE_PERMIT[3] & ~reg_be))) |
-               (addr_hit[4] & (|(ADDR_TABLE_PERMIT[4] & ~reg_be))) |
-               (addr_hit[5] & (|(ADDR_TABLE_PERMIT[5] & ~reg_be)))));
+              ((addr_hit[ 0] & (|(ADDR_TABLE_PERMIT[ 0] & ~reg_be))) |
+               (addr_hit[ 1] & (|(ADDR_TABLE_PERMIT[ 1] & ~reg_be))) |
+               (addr_hit[ 2] & (|(ADDR_TABLE_PERMIT[ 2] & ~reg_be))) |
+               (addr_hit[ 3] & (|(ADDR_TABLE_PERMIT[ 3] & ~reg_be))) |
+               (addr_hit[ 4] & (|(ADDR_TABLE_PERMIT[ 4] & ~reg_be))) |
+               (addr_hit[ 5] & (|(ADDR_TABLE_PERMIT[ 5] & ~reg_be))) |
+               (addr_hit[ 6] & (|(ADDR_TABLE_PERMIT[ 6] & ~reg_be))) |
+               (addr_hit[ 7] & (|(ADDR_TABLE_PERMIT[ 7] & ~reg_be))) |
+               (addr_hit[ 8] & (|(ADDR_TABLE_PERMIT[ 8] & ~reg_be))) |
+               (addr_hit[ 9] & (|(ADDR_TABLE_PERMIT[ 9] & ~reg_be))) |
+               (addr_hit[10] & (|(ADDR_TABLE_PERMIT[10] & ~reg_be))) |
+               (addr_hit[11] & (|(ADDR_TABLE_PERMIT[11] & ~reg_be))) |
+               (addr_hit[12] & (|(ADDR_TABLE_PERMIT[12] & ~reg_be))) |
+               (addr_hit[13] & (|(ADDR_TABLE_PERMIT[13] & ~reg_be))) |
+               (addr_hit[14] & (|(ADDR_TABLE_PERMIT[14] & ~reg_be))) |
+               (addr_hit[15] & (|(ADDR_TABLE_PERMIT[15] & ~reg_be))) |
+               (addr_hit[16] & (|(ADDR_TABLE_PERMIT[16] & ~reg_be))) |
+               (addr_hit[17] & (|(ADDR_TABLE_PERMIT[17] & ~reg_be))) |
+               (addr_hit[18] & (|(ADDR_TABLE_PERMIT[18] & ~reg_be))) |
+               (addr_hit[19] & (|(ADDR_TABLE_PERMIT[19] & ~reg_be))) |
+               (addr_hit[20] & (|(ADDR_TABLE_PERMIT[20] & ~reg_be))) |
+               (addr_hit[21] & (|(ADDR_TABLE_PERMIT[21] & ~reg_be)))));
   end
 
-  assign data_0_we = addr_hit[0] & reg_we & !reg_error;
-  assign data_0_wd = reg_wdata[63:0];
+  assign start_addr_0_we = addr_hit[0] & reg_we & !reg_error;
+  assign start_addr_0_wd = reg_wdata[31:0];
 
-  assign data_1_we = addr_hit[1] & reg_we & !reg_error;
-  assign data_1_wd = reg_wdata[63:0];
+  assign start_addr_1_we = addr_hit[1] & reg_we & !reg_error;
+  assign start_addr_1_wd = reg_wdata[31:0];
 
-  assign data_2_we = addr_hit[2] & reg_we & !reg_error;
-  assign data_2_wd = reg_wdata[63:0];
+  assign start_addr_2_we = addr_hit[2] & reg_we & !reg_error;
+  assign start_addr_2_wd = reg_wdata[31:0];
 
-  assign data_3_we = addr_hit[3] & reg_we & !reg_error;
-  assign data_3_wd = reg_wdata[63:0];
+  assign start_addr_3_we = addr_hit[3] & reg_we & !reg_error;
+  assign start_addr_3_wd = reg_wdata[31:0];
 
-  assign valid_valid_0_we = addr_hit[4] & reg_we & !reg_error;
-  assign valid_valid_0_wd = reg_wdata[0];
+  assign end_addr_0_we = addr_hit[4] & reg_we & !reg_error;
+  assign end_addr_0_wd = reg_wdata[31:0];
 
-  assign valid_valid_1_we = addr_hit[4] & reg_we & !reg_error;
-  assign valid_valid_1_wd = reg_wdata[1];
+  assign end_addr_1_we = addr_hit[5] & reg_we & !reg_error;
+  assign end_addr_1_wd = reg_wdata[31:0];
 
-  assign valid_valid_2_we = addr_hit[4] & reg_we & !reg_error;
-  assign valid_valid_2_wd = reg_wdata[2];
+  assign end_addr_2_we = addr_hit[6] & reg_we & !reg_error;
+  assign end_addr_2_wd = reg_wdata[31:0];
 
-  assign valid_valid_3_we = addr_hit[4] & reg_we & !reg_error;
-  assign valid_valid_3_wd = reg_wdata[3];
+  assign end_addr_3_we = addr_hit[7] & reg_we & !reg_error;
+  assign end_addr_3_wd = reg_wdata[31:0];
 
-  assign start_we = addr_hit[5] & reg_we & !reg_error;
+  assign valid_0_we = addr_hit[8] & reg_we & !reg_error;
+  assign valid_0_wd = reg_wdata[31:0];
+
+  assign valid_1_we = addr_hit[9] & reg_we & !reg_error;
+  assign valid_1_wd = reg_wdata[31:0];
+
+  assign valid_2_we = addr_hit[10] & reg_we & !reg_error;
+  assign valid_2_wd = reg_wdata[31:0];
+
+  assign valid_3_we = addr_hit[11] & reg_we & !reg_error;
+  assign valid_3_wd = reg_wdata[31:0];
+
+  assign dirty_0_we = addr_hit[12] & reg_we & !reg_error;
+  assign dirty_0_wd = reg_wdata[31:0];
+
+  assign dirty_1_we = addr_hit[13] & reg_we & !reg_error;
+  assign dirty_1_wd = reg_wdata[31:0];
+
+  assign dirty_2_we = addr_hit[14] & reg_we & !reg_error;
+  assign dirty_2_wd = reg_wdata[31:0];
+
+  assign dirty_3_we = addr_hit[15] & reg_we & !reg_error;
+  assign dirty_3_wd = reg_wdata[31:0];
+
+  assign shared_0_we = addr_hit[16] & reg_we & !reg_error;
+  assign shared_0_wd = reg_wdata[31:0];
+
+  assign shared_1_we = addr_hit[17] & reg_we & !reg_error;
+  assign shared_1_wd = reg_wdata[31:0];
+
+  assign shared_2_we = addr_hit[18] & reg_we & !reg_error;
+  assign shared_2_wd = reg_wdata[31:0];
+
+  assign shared_3_we = addr_hit[19] & reg_we & !reg_error;
+  assign shared_3_wd = reg_wdata[31:0];
+
+  assign start_we = addr_hit[20] & reg_we & !reg_error;
   assign start_wd = reg_wdata[0];
+
+  assign end_flag_we = addr_hit[21] & reg_we & !reg_error;
+  assign end_flag_wd = reg_wdata[0];
 
   // Read data return
   always_comb begin
     reg_rdata_next = '0;
     unique case (1'b1)
       addr_hit[0]: begin
-        reg_rdata_next[63:0] = data_0_qs;
+        reg_rdata_next[31:0] = start_addr_0_qs;
       end
 
       addr_hit[1]: begin
-        reg_rdata_next[63:0] = data_1_qs;
+        reg_rdata_next[31:0] = start_addr_1_qs;
       end
 
       addr_hit[2]: begin
-        reg_rdata_next[63:0] = data_2_qs;
+        reg_rdata_next[31:0] = start_addr_2_qs;
       end
 
       addr_hit[3]: begin
-        reg_rdata_next[63:0] = data_3_qs;
+        reg_rdata_next[31:0] = start_addr_3_qs;
       end
 
       addr_hit[4]: begin
-        reg_rdata_next[0] = valid_valid_0_qs;
-        reg_rdata_next[1] = valid_valid_1_qs;
-        reg_rdata_next[2] = valid_valid_2_qs;
-        reg_rdata_next[3] = valid_valid_3_qs;
+        reg_rdata_next[31:0] = end_addr_0_qs;
       end
 
       addr_hit[5]: begin
+        reg_rdata_next[31:0] = end_addr_1_qs;
+      end
+
+      addr_hit[6]: begin
+        reg_rdata_next[31:0] = end_addr_2_qs;
+      end
+
+      addr_hit[7]: begin
+        reg_rdata_next[31:0] = end_addr_3_qs;
+      end
+
+      addr_hit[8]: begin
+        reg_rdata_next[31:0] = valid_0_qs;
+      end
+
+      addr_hit[9]: begin
+        reg_rdata_next[31:0] = valid_1_qs;
+      end
+
+      addr_hit[10]: begin
+        reg_rdata_next[31:0] = valid_2_qs;
+      end
+
+      addr_hit[11]: begin
+        reg_rdata_next[31:0] = valid_3_qs;
+      end
+
+      addr_hit[12]: begin
+        reg_rdata_next[31:0] = dirty_0_qs;
+      end
+
+      addr_hit[13]: begin
+        reg_rdata_next[31:0] = dirty_1_qs;
+      end
+
+      addr_hit[14]: begin
+        reg_rdata_next[31:0] = dirty_2_qs;
+      end
+
+      addr_hit[15]: begin
+        reg_rdata_next[31:0] = dirty_3_qs;
+      end
+
+      addr_hit[16]: begin
+        reg_rdata_next[31:0] = shared_0_qs;
+      end
+
+      addr_hit[17]: begin
+        reg_rdata_next[31:0] = shared_1_qs;
+      end
+
+      addr_hit[18]: begin
+        reg_rdata_next[31:0] = shared_2_qs;
+      end
+
+      addr_hit[19]: begin
+        reg_rdata_next[31:0] = shared_3_qs;
+      end
+
+      addr_hit[20]: begin
         reg_rdata_next[0] = start_qs;
+      end
+
+      addr_hit[21]: begin
+        reg_rdata_next[0] = end_flag_qs;
       end
 
       default: begin
@@ -449,8 +978,8 @@ endmodule
 
 module addr_table_reg_top_intf
 #(
-  parameter int AW = 6,
-  localparam int DW = 64
+  parameter int AW = 7,
+  localparam int DW = 32
 ) (
   input logic clk_i,
   input logic rst_ni,

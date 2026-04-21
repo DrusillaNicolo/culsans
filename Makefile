@@ -32,10 +32,10 @@ PYTHON     ?= python3
 REGGEN_PATH = $(shell find . -name "regtool.py" | head -1)
 REGGEN      = $(PYTHON) $(REGGEN_PATH)
 
-NUM_ENTRIES ?= 4
+NUM_ENTRIES ?= 3
 
 gen-regs:
-	sed -i 's/count: "[0-9]*"/count: "$(NUM_ENTRIES)"/g' rtl/data/addr_table.hjson
+	sed -i 's/count:[ \t]*"[0-9]*"/count: "$(NUM_ENTRIES)"/g' rtl/data/addr_table.hjson
 	$(REGGEN) -r --outdir rtl/src \
 	          rtl/data/addr_table.hjson
 	$(REGGEN) --cdefines \
